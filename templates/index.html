@@ -1,0 +1,50 @@
+<html>
+    <head>
+        <script type="text/javascript">
+            function previewFile(){
+                var preview = document.querySelector('img'); //selects the query named img
+                var file    = document.querySelector('input[type=file]').files[0]; //sames as here
+                var reader  = new FileReader();
+                
+                var xhr = new XMLHttpRequest();
+                // we defined the xhr
+
+                xhr.onreadystatechange = function () {
+                    if (this.readyState != 4) return;
+
+                    if (this.status == 200) {
+                        var data = JSON.parse(this.responseText);
+                        console.log(data)
+                        // we get the returned data
+                    }
+
+                    // end of state change: it can be after some time (async)
+                };
+
+                xhr.open('POST', "http://127.0.0.1:5000/upload/image", true);
+                xhr.setRequestHeader("Content-Type","multipart/form-data");
+                var formData = new FormData();
+                formData.append("image", file);
+                xhr.send(formData);
+
+                reader.onloadend = function () {
+                    preview.src = reader.result;
+                }
+            
+                if (file) {
+                    reader.readAsDataURL(file); //reads the data as a URL
+                } else {
+                    preview.src = "";
+                }
+            }
+            
+            previewFile();  //calls the function named previewFile()
+        </script>
+    </head>
+    <body>
+        <h1>Upload Image to S3</h1>
+        <p>created by Theo</p>
+        <input type='file' onchange="previewFile()"/>
+        <img src="" height="200" alt="Image preview...">
+    </body>
+</html>
